@@ -8,10 +8,10 @@ bin/
 
 # Test binary
 *.test
+__debug_bin*
 
 # Output
 *.out
-cover.out
 coverage.html
 
 # Go workspace
@@ -34,11 +34,17 @@ Thumbs.db
 
 # Build
 dist/
+*.tgz
 
 # Local config overrides
 config.local.yaml
+.env
+.env.*
 
 # Data
 data/
 *.db
 *.sqlite
+
+# Temp
+tmp/
