@@ -5,11 +5,14 @@
 package classifier
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/Priyasharma620064/kubedriftguard/internal/differ"
 	"github.com/Priyasharma620064/kubedriftguard/internal/models"
 )
+
+var arrayIndexRegex = regexp.MustCompile(`\[\d+\]`)
 
 // Classifier categorizes drift events by severity.
 type Classifier struct {
@@ -143,20 +146,7 @@ func matchesPattern(fieldPath, pattern string) bool {
 
 // normalizeArrayIndices replaces [0], [1], etc. with [*].
 func normalizeArrayIndices(path string) string {
-	result := path
-	for {
-		start := strings.Index(result, "[")
-		if start == -1 {
-			break
-		}
-		end := strings.Index(result[start:], "]")
-		if end == -1 {
-			break
-		}
-		end = start + end
-		result = result[:start] + "[*]" + result[end+1:]
-	}
-	return result
+	return arrayIndexRegex.ReplaceAllString(path, "[*]")
 }
 
 // formatValue converts an interface{} to a string for display.

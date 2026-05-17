@@ -5,10 +5,13 @@ package differ
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
+
+var arrayIndexRegex = regexp.MustCompile(`\[\d+\]`)
 
 // DiffField represents a single field that has drifted.
 type DiffField struct {
@@ -217,7 +220,7 @@ func (d *Differ) isIgnored(path string) bool {
 
 // normalizePath replaces bracketed array indexes with wildcard or cleans path format.
 func normalizePath(path string) string {
-	return strings.TrimSpace(path)
+	return arrayIndexRegex.ReplaceAllString(strings.TrimSpace(path), "[*]")
 }
 
 // matchWildcard supports matching spec.containers[0].image with spec.containers[*].image
@@ -227,21 +230,7 @@ func matchWildcard(path, pattern string) bool {
 	}
 	
 	// Convert array indices to [*] in path to compare against pattern
-	// Example: "spec.template.spec.containers[0].image" -> "spec.template.spec.containers[*].image"
-	normalized := path
-	for {
-		start := strings.Index(normalized, "[")
-		if start == -1 {
-			break
-		}
-		end := strings.Index(normalized[start:], "]")
-		if end == -1 {
-			break
-		}
-		end = start + end
-		normalized = normalized[:start] + "[*]" + normalized[end+1:]
-	}
-	
+	normalized := arrayIndexRegex.ReplaceAllString(path, "[*]")
 	return normalized == pattern
 }
 
