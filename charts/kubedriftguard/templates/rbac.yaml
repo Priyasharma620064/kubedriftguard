@@ -1,0 +1,48 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "kubedriftguard.fullname" . }}
+  labels:
+    {{- include "kubedriftguard.labels" . | nindent 4 }}
+rules:
+  # DriftPolicy CRD access
+  - apiGroups: ["driftguard.io"]
+    resources: ["driftpolicies"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["driftguard.io"]
+    resources: ["driftpolicies/status"]
+    verbs: ["get", "update", "patch"]
+
+  # Read access to monitored resources
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "daemonsets", "replicasets"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets", "services"]
+    verbs: ["get", "list", "watch"]
+
+  # OpenKruise resources
+  - apiGroups: ["apps.kruise.io"]
+    resources: ["clonesets", "sidecarsets", "broadcastjobs", "statefulsets"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+
+  # Events for recording drift detections
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "kubedriftguard.fullname" . }}
+  labels:
+    {{- include "kubedriftguard.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "kubedriftguard.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "kubedriftguard.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}

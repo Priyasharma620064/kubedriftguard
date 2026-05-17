@@ -1,0 +1,41 @@
+# Default values for kubedriftguard
+replicaCount: 1
+
+image:
+  repository: ghcr.io/priyasharma620064/kubedriftguard
+  pullPolicy: IfNotPresent
+  tag: ""  # Defaults to appVersion
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+controller:
+  metricsAddr: ":8080"
+  healthAddr: ":8081"
+  dryRun: false
+
+config:
+  logLevel: info
+  scanInterval: 30s
+  remediation:
+    enabled: true
+    dryRun: false
+    maxRetries: 3
+  gitSync:
+    cacheDir: /tmp/kubedriftguard/repos
+    syncInterval: 5m
+    timeout: 2m
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

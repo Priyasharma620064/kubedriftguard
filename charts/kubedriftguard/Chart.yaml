@@ -1,0 +1,18 @@
+apiVersion: v2
+name: kubedriftguard
+description: Real-time Kubernetes configuration drift detection and self-healing engine
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - kubernetes
+  - drift-detection
+  - gitops
+  - self-healing
+  - context-engineering
+home: https://github.com/Priyasharma620064/kubedriftguard
+sources:
+  - https://github.com/Priyasharma620064/kubedriftguard
+maintainers:
+  - name: Priya Sharma
+    url: https://github.com/Priyasharma620064
