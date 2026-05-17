@@ -1,0 +1,24 @@
+# KubeDriftGuard Configuration
+# Override any value with env vars prefixed KUBEDRIFTGUARD_
+# Example: KUBEDRIFTGUARD_LOG_LEVEL=debug
+
+log_level: info
+scan_interval: 30s
+metrics_addr: ":8080"
+health_addr: ":8081"
+
+git_sync:
+  cache_dir: /tmp/kubedriftguard/repos
+  sync_interval: 5m
+  timeout: 2m
+
+controller:
+  max_concurrent_reconciles: 3
+  # namespace: ""  # empty = watch all namespaces
+
+remediation:
+  enabled: true
+  dry_run: false
+  max_retries: 3
+
+agents_file: AGENTS.md
