@@ -1,0 +1,43 @@
+apiVersion: driftguard.io/v1alpha1
+kind: DriftPolicy
+metadata:
+  name: production-policy
+  namespace: default
+spec:
+  targetNamespaces:
+    - default
+    - production
+  watchResources:
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: apps.kruise.io
+      kind: CloneSet
+  gitSource:
+    repoURL: https://github.com/example/k8s-manifests
+    branch: main
+    path: /production
+  scanInterval: "30s"
+  classification:
+    defaultSeverity: config
+    rules:
+      - field: spec.replicas
+        severity: critical
+      - field: metadata.labels
+        severity: cosmetic
+      - field: metadata.annotations
+        severity: cosmetic
+      - field: spec.template.spec.containers[*].image
+        severity: critical
+      - field: spec.template.spec.containers[*].resources
+        severity: security
+      - field: spec.template.spec.serviceAccountName
+        severity: security
+  remediation:
+    dryRun: false
+    strategy:
+      cosmetic: ignore
+      config: auto-revert
+      security: alert-and-hold
+      critical: auto-revert
